@@ -28,8 +28,7 @@ if [[ -z "${1-}" ]]; then
     get_template default
 else
     {
-        get_template "$1"
-        name="${2-}"
+        get_template "$1" && name="${2-}"
     } || {
         echo "Fallbak to default template"
         get_template default
@@ -41,18 +40,31 @@ if [[ -z "${name-}" ]]; then
     read -rp "Package name: " name
 fi
 
+if [[ -f "$WORKSPACE"/config ]]; then
+    . "$WORKSPACE"/config
+fi
+
 cp -R "$WORKSPACE"/templates/"$template" "$name"
 cd "$name"
 git init
 if [[ -f package.json ]]; then
     echo "Config yarn package"
     sed -i "s|\$name|$name|g" package.json
+    if [[ -n "${REPOSITORY-}" ]]; then
+        sed -i "s|\$repository|$REPOSITORY|g" package.json
+    fi
+    if [[ -n "${AUTHOR-}" ]]; then
+        sed -i "s|\$author|$AUTHOR|g" package.json
+    fi
     for file in .git/hooks/*; do
         filename="$(basename "$file")"
         if [[ ! "$filename" =~ "." ]]; then
-            cp .git/hooks/"$filename" .husky/
+            if [[ ! -f .husky/"$filename" ]]; then
+                cp .git/hooks/"$filename" .husky/
+            else
+                cp .git/hooks/"$filename" .husky/"$filename".local
+            fi
         fi
     done
-    yarn
     yarn init
 fi
