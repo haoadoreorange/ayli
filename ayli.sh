@@ -1,25 +1,30 @@
 #!/bin/bash
 set -euo pipefail
 
-if [[ "$(which readlink)" =~ "which: no readlink in" ]]; then
-    echo "ERROR: Dependency missing, please install readlink"
+if [[ "$(which realpath)" =~ "which: no realpath in" ]]; then
+    echo "ERROR: Dependency missing, please install realpath"
     exit 1
 fi
 
-WORKSPACE="$(dirname "$(readlink -f "$BASH_SOURCE")")"
+WORKSPACE="$(dirname "$(realpath "$BASH_SOURCE")")"
 mkdir -p "$WORKSPACE"/alias
 
 get_template() {
     if [[ -z "${1-}" ]]; then
-        echo "ERROR: function get_template requires 1 argument"
+        echo "ERROR: fn get_template requires 1 argument"
         exit 1
+    fi
+    if [[ "$1" == "default" ]]; then
+        echo "Use default template"
     fi
     if [[ -d "$WORKSPACE"/templates/"$1" ]]; then
         template="$1"
     elif [[ -f "$WORKSPACE"/alias/"$1" ]]; then
         template="$(cat "$WORKSPACE"/alias/"$1")"
     else
-        echo "ERROR: template $1 not found"
+        if [[ "${2-}" != "fail-silent" ]]; then
+            echo "ERROR: template $1 not found"
+        fi
         return 1
     fi
 }
@@ -28,25 +33,25 @@ if [[ -z "${1-}" ]]; then
     get_template default
 else
     {
-        get_template "$1" && name="${2-}"
+        get_template "$1" fail-silent && path="${2-}"
     } || {
-        echo "Fallbak to default template"
         get_template default
-        name="$1"
+        path="$1"
     }
 fi
 
-if [[ -z "${name-}" ]]; then
-    read -rp "Package name: " name
+if [[ -z "${path-}" ]]; then
+    read -rp "Path to new package folder: " path
 fi
 
 if [[ -f "$WORKSPACE"/config ]]; then
     . "$WORKSPACE"/config
 fi
 
-cp -R "$WORKSPACE"/templates/"$template" "$name"
-cd "$name"
+cp -R "$WORKSPACE"/templates/"$template" "$path"
+cd "$path"
 git init
+name="$(basename "$path")"
 if [[ -f package.json ]]; then
     echo "Config yarn package"
     sed -i "s|\$name|$name|g" package.json
