@@ -52,6 +52,8 @@ cp -R "$WORKSPACE"/templates/"$template" "$path"
 cd "$path"
 git init
 name="$(basename "$path")"
+echo "# $name" >README.md
+
 if [[ -f package.json ]]; then
     echo "Config yarn package"
     sed -i "s|\$name|$name|g" package.json
