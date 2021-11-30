@@ -1,7 +1,10 @@
 # Another Yarn-Like Init
 
 ### Installation
-clone this repo.
+
+`git clone https://github.com/haoadoresorange/ayli.git && bash ayli/install.sh` 
+
+Include `"$HOME"/.local/bin` in your `PATH` if not yet.
 
 ### Usage
 `ayli <template> <destination>`
