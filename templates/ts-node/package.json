@@ -22,7 +22,7 @@
         "prepack": "pinst --disable && yarn build",
         "postpack": "pinst --enable",
         "build": "rimraf dist && gulp",
-        "start": "NODE_ENV=production node dist/index.js",
+        "start": "NODE_ENV=production node -r source-map-support/register dist/index.js",
         "dev": "NODE_PATH=src ts-node-dev src/index.ts",
         "lint": "eslint '**/*.{js,ts}' --quiet --fix",
         "lint-staged": "lint-staged",
@@ -41,6 +41,9 @@
             "node_modules",
             "src"
         ]
+    },
+    "dependencies": {
+        "source-map-support": "^0.5.21"
     },
     "devDependencies": {
         "@tsconfig/node14": "^1.0.1",

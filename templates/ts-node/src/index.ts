@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 process.on(`unhandledRejection`, (reason, promise) => {
-    console.error(`Unhandled Rejection at:`, promise, `reason:`, reason);
+    console.error(`Unhandled Rejection reason:`);
+    console.error(reason);
+    console.error(`Unhandled Rejection at:`);
+    console.error(promise);
     process.exit(1);
 });
 import "lib/polyfill";
 
 if (process.argv[2] === `--upgrade`) {
-    void import(`fs`).then((fs) => {
+    import(`fs`).then((fs) => {
         const package_json_path = `package.json`;
         let ext = `bak`;
         let i = 0;
