@@ -19,7 +19,7 @@ get_template() {
     fi
     if [[ -d "$WORKSPACE"/templates/"$1" ]]; then
         template="$1"
-    elif [[ -f "$WORKSPACE"/alias/"$1" ]]; then
+    elif [[ -f "$WORKSPACE"/alias/"$1" && -d "$WORKSPACE"/templates/"$(cat "$WORKSPACE"/alias/"$1")" ]]; then
         template="$(cat "$WORKSPACE"/alias/"$1")"
     else
         if [[ "${2-}" != "fail-silent" ]]; then
@@ -66,10 +66,13 @@ if [[ -f package.json ]]; then
     for file in .git/hooks/*; do
         filename="$(basename "$file")"
         if [[ ! "$filename" =~ "." ]]; then
-            if [[ ! -f .husky/"$filename" ]]; then
+            if [[ -f .husky/"$filename" ]]; then
+                tmp="$(cat .husky/"$filename")"
                 cp .git/hooks/"$filename" .husky/
+                echo >>.husky/"$filename"
+                echo "$tmp" >>.husky/"$filename"
             else
-                cp .git/hooks/"$filename" .husky/"$filename".local
+                cp .git/hooks/"$filename" .husky/
             fi
         fi
     done

@@ -2,7 +2,7 @@
 
 ### Installation
 
-`git clone https://github.com/haoadoresorange/ayli.git && bash ayli/install.sh` 
+`git clone https://github.com/haoadoreorange/ayli.git "$HOME"/.ayli && bash "$HOME"/.ayli/install.sh` 
 
 Include `"$HOME"/.local/bin` in your `PATH` if not yet.
 
